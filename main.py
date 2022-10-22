@@ -11,7 +11,7 @@ from problem import SailingShip
 from utils import print_solution, get_path
 
 
-def variables():
+def get_variables():
     ports = [(90, 17), (157, 102), (38, 123), (80, 143), (96, 44), (23, 80), (8, 40), (66, 73), (86, 81), (181, 165),
              (9, 173), (287, 241)]
     lands = [(20, 20, 40, 45), (100, 50, 150, 70)]
@@ -40,7 +40,7 @@ def draw_map(sea_map, ports, lands, green):
 
 
 def run(problem):
-    max_eval = 30_000
+    max_eval = 60_000
 
     pop_size = 600
     offspring = 600
@@ -53,7 +53,7 @@ def run(problem):
         crossover=DifferentialEvolutionCrossover(CR=1.0, F=0.5, K=0.5),
         mutation=PolynomialMutation(probability=1.0 / problem.number_of_variables, distribution_index=20),
         aggregative_function=Tschebycheff(dimension=problem.number_of_objectives),
-        neighbor_size=20,
+        neighbor_size=2,
         neighbourhood_selection_probability=0.9,
         max_number_of_replaced_solutions=2,
         weight_files_path='resources/MOEAD_weights',
@@ -72,9 +72,21 @@ def run(problem):
               'crossover probability': cross_prob,
               }
 
+    variables = []
+    ports = set()
+
+    for i in range(len(result.variables)):
+        p = round(result.variables[i])
+
+        while p in ports:
+            p = (p + 1) % len(result.variables)
+
+        variables.append(p)
+        ports.add(p)
+
     print_solution(algorithm, result, problem.get_fitness(), params)
 
-    return result.variables
+    return variables
 
 
 def draw_solution(sea_map, solution, points, extended_points):
@@ -86,7 +98,7 @@ def draw_solution(sea_map, solution, points, extended_points):
 
 
 def main():
-    sea_map, ports, lands, green = variables()
+    sea_map, ports, lands, green = get_variables()
 
     problem = SailingShip(ports, green, lands)
 
