@@ -40,7 +40,7 @@ def draw_map(sea_map, ports, lands, green):
 
 
 def run(problem):
-    max_eval = 60_000
+    max_eval = 500_000
 
     pop_size = 600
     offspring = 600
@@ -49,11 +49,11 @@ def run(problem):
 
     algorithm = MOEAD(
         problem=problem,
-        population_size=300,
+        population_size=3000,
         crossover=DifferentialEvolutionCrossover(CR=1.0, F=0.5, K=0.5),
         mutation=PolynomialMutation(probability=1.0 / problem.number_of_variables, distribution_index=20),
         aggregative_function=Tschebycheff(dimension=problem.number_of_objectives),
-        neighbor_size=2,
+        neighbor_size=20,
         neighbourhood_selection_probability=0.9,
         max_number_of_replaced_solutions=2,
         weight_files_path='resources/MOEAD_weights',
