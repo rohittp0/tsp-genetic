@@ -26,29 +26,27 @@ def create_distance_matrix(points, green, lands):
 
                 distance -= math.dist(inter[0], inter[1])
 
-                x1, y1, x2, y2 = inter[0][0], inter[0][1], inter[1][0], inter[1][1]
-
-                x1, y1 = get_closest(p1, (x1, y1), (x2, y2))
-                x2, y2 = get_closest(p2, (x1, y1), (x2, y2))
+                (x1, y1), (x2, y2) = get_closest(p1, inter[0], inter[1]), get_closest(p2, inter[0], inter[1])
 
                 a, b, c, d = land[0], land[1], land[2], land[3]
+                if x2 == a or y2 == b:
+                    a, b, c, d = c, d, a, b
 
-                a, b = get_closest(p1, (a, b), (c, d))
-                c, d = get_closest(p2, (a, b), (c, d))
-
-                path = math.fabs(x1 - x2)
-
-                if (x1 == a and x2 == c) or (y1 == b and y2 == d):
+                if (int(x1) == a and int(x2) == c) or (int(y1) == b and int(y2) == d):
+                    flip = False
                     if y1 == b and y2 == d:
                         x1, y1, x2, y2 = y1, x1, y2, x2
                         a, b, c, d = b, a, d, c
+                        flip = True
 
                     p = b if math.fabs(b - y1) < math.fabs(d - y1) else d
-                    path += math.fabs(2 * p - y1 - y2)
+                    distance += math.fabs(x1 - x2) + math.fabs(2 * p - y1 - y2)
 
                     extended_points[(i, j)] = [(round(x1), round(y1)), (a, p), (c, p), (round(x2), round(y2))]
+                    if flip:
+                        extended_points[(i, j)] = [(y, x) for x, y in extended_points[(i, j)]]
                 else:
-                    path += math.fabs(y1 - y2)
+                    distance += math.fabs(x1 - x2) + math.fabs(y1 - y2)
                     extended_points[(i, j)] = [(round(x1), round(y1)), (round(x2), round(y2))]
 
                 extended_points[(j, i)] = [*reversed(extended_points[(i, j)])]

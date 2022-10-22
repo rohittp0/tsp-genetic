@@ -39,12 +39,12 @@ def draw_map(sea_map, ports, lands, green):
 
 
 def run(problem):
-    max_eval = 15_000.3
+    max_eval = 30_000
 
-    pop_size = 400
-    offspring = 400
-    mut_prob = 0.05
-    cross_prob = 0.9
+    pop_size = 600
+    offspring = 600
+    mut_prob = 0.04
+    cross_prob = 0.5
 
     termination = termination_criterion.StoppingByEvaluations(max_evaluations=max_eval)
 

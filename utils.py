@@ -35,11 +35,6 @@ def print_solution(my_algo, pop_evolved, logs, params):
 
 
 def get_intersect(a1, a2, b1, b2):
-    if min(a1[0], a2[0]) > max(b1[0], b2[0]) or min(b1[0], b2[0]) > max(a1[0], a2[0]):
-        return None
-    if min(a1[1], a2[1]) > max(b1[1], b2[1]) or min(b1[1], b2[1]) > max(a1[1], a2[1]):
-        return None
-
     s = np.vstack([a1, a2, b1, b2])  # s for stacked
     h = np.hstack((s, np.ones((4, 1))))  # h for homogeneous
     l1 = np.cross(h[0], h[1])  # get first line
@@ -49,7 +44,14 @@ def get_intersect(a1, a2, b1, b2):
     if z == 0:  # lines are parallel
         return None
 
-    return x / z, y / z
+    x, y = x / z, y / z
+
+    if x < min(a1[0], a2[0]) or x > max(a1[0], a2[0]) or y < min(a1[1], a2[1]) or y > max(a1[1], a2[1]):
+        return None
+    if x < min(b1[0], b2[0]) or x > max(b1[0], b2[0]) or y < min(b1[1], b2[1]) or y > max(b1[1], b2[1]):
+        return None
+
+    return x, y
 
 
 def get_intersections(point1, point2, land):
