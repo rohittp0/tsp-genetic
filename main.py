@@ -1,13 +1,13 @@
 import cv2
 import numpy as np
 from jmetal.algorithm.multiobjective import NSGAII
-from jmetal.operator.crossover import SBXCrossover
-from jmetal.operator.mutation import SimpleRandomMutation
+from jmetal.operator.crossover import PMXCrossover
+from jmetal.operator.mutation import PermutationSwapMutation
 from jmetal.util import termination_criterion
 from jmetal.util.observer import ProgressBarObserver
 
 from problem import SailingShip
-from utils import print_solution
+from utils import print_solution, get_path
 
 
 def variables():
@@ -37,21 +37,10 @@ def draw_map(sea_map, ports, lands, green):
     return sea_map
 
 
-def get_sudo_ports(lands):
-    ports = []
-
-    for land in lands:
-        ports.append((land[0], land[1]))
-        ports.append((land[2], land[3]))
-        ports.append((land[0], land[3]))
-
-    return ports
-
-
 def run(problem):
-    max_eval = 300_000
+    max_eval = 30_000
 
-    pop_size = 40_000
+    pop_size = 4_000
     offspring = 4000
     mut_prob = 0.05
     cross_prob = 0.9
@@ -62,8 +51,8 @@ def run(problem):
         problem=problem,
         population_size=pop_size,
         offspring_population_size=offspring,
-        mutation=SimpleRandomMutation(mut_prob),
-        crossover=SBXCrossover(cross_prob),
+        mutation=PermutationSwapMutation(mut_prob),
+        crossover=PMXCrossover(cross_prob),
         termination_criterion=termination,
     )
 
@@ -81,10 +70,7 @@ def run(problem):
     algorithm.observable.register(progress_bar)
 
     algorithm.run()
-    result = [r for r in algorithm.get_result() if sum(r.constraints) >= 0]
-
-    if len(result) == 0:
-        return None
+    result = algorithm.get_result()[0]
 
     params = {'population': pop_size,
               'offspring': offspring,
@@ -92,36 +78,33 @@ def run(problem):
               'crossover probability': cross_prob,
               }
 
-    print_solution(algorithm, result, params)
+    print_solution(algorithm, result, problem.get_fitness(), params)
 
-    result = [round(v) for v in result[0].variables]
-    result = [*dict.fromkeys(result)]
-
-    return result
+    return result.variables
 
 
-def draw_solution(sea_map, solution, points):
-    coords = [points[round(i)] for i in solution]
-    for i in range(len(coords)):
-        cv2.line(sea_map, coords[i], coords[(i+1) % len(coords)], (0, 0, 0), lineType=cv2.LINE_AA)
+def draw_solution(sea_map, solution, points, extended_points):
+    coords = get_path(points, solution, extended_points)
+    for i in range(len(coords) -1):
+        cv2.line(sea_map, coords[i], coords[i+1], (0, 0, 0), lineType=cv2.LINE_AA)
 
     return sea_map
 
 
 def main():
     sea_map, ports, lands, green = variables()
-    sudo_ports = get_sudo_ports(lands)
 
-    problem = SailingShip(ports, sudo_ports, green, lands)
+    problem = SailingShip(ports, green, lands)
 
     solution = run(problem)
+    extended_points = problem.extended_points
 
     if solution is None:
         print("No solution found")
         return
 
     sea_map = draw_map(sea_map, ports, lands, green)
-    sea_map = draw_solution(sea_map, solution, ports + sudo_ports)
+    sea_map = draw_solution(sea_map, solution, ports, extended_points)
 
     cv2.imshow('map', sea_map)
     cv2.waitKey()
