@@ -76,12 +76,10 @@ def get_closest(origin, point1, point2):
 def get_path(points, solutions, extended_points):
     path = []
     for i in range(len(solutions) - 1):
-        point1 = points[solutions[i]]
-        point2 = points[solutions[i + 1]]
+        path.append(points[solutions[i]])
 
-        path.append(point1)
-        if (point1, point2) in extended_points:
-            path.extend(extended_points[(point1, point2)])
+        if (solutions[i], solutions[i + 1]) in extended_points:
+            path.extend(extended_points[(solutions[i], solutions[i + 1])])
 
     path.append(points[solutions[-1]])
 

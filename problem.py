@@ -17,8 +17,10 @@ def create_distance_matrix(points, green, lands):
         for j in range(i + 1, len(points)):
             distance = math.dist(points[i], points[j])
 
+            p1, p2 = points[i], points[j]
+
             for land in lands:
-                inter = get_intersections(points[i], points[j], land)
+                inter = get_intersections(p1, p2, land)
                 if len(inter) < 2:
                     continue
 
@@ -26,13 +28,13 @@ def create_distance_matrix(points, green, lands):
 
                 x1, y1, x2, y2 = inter[0][0], inter[0][1], inter[1][0], inter[1][1]
 
-                x1, y1 = get_closest(points[i], (x1, y1), (x2, y2))
-                x2, y2 = get_closest(points[j], (x1, y1), (x2, y2))
+                x1, y1 = get_closest(p1, (x1, y1), (x2, y2))
+                x2, y2 = get_closest(p2, (x1, y1), (x2, y2))
 
                 a, b, c, d = land[0], land[1], land[2], land[3]
 
-                a, b = get_closest(points[i], (a, b), (c, d))
-                c, d = get_closest(points[j], (a, b), (c, d))
+                a, b = get_closest(p1, (a, b), (c, d))
+                c, d = get_closest(p2, (a, b), (c, d))
 
                 path = math.fabs(x1 - x2)
 
@@ -44,13 +46,12 @@ def create_distance_matrix(points, green, lands):
                     p = b if math.fabs(b - y1) < math.fabs(d - y1) else d
                     path += math.fabs(2 * p - y1 - y2)
 
-                    extended_points[(i, j)] = [(x1, y1), (a, p), (c, p), (x2, y2)]
-                    extended_points[(j, i)] = [(x2, y2), (c, p), (a, p), (x1, y1)]
+                    extended_points[(i, j)] = [(round(x1), round(y1)), (a, p), (c, p), (round(x2), round(y2))]
                 else:
                     path += math.fabs(y1 - y2)
+                    extended_points[(i, j)] = [(round(x1), round(y1)), (round(x2), round(y2))]
 
-                    extended_points[(i, j)] = [(x1, y1), (x2, y2)]
-                    extended_points[(j, i)] = [(x2, y2), (x1, y1)]
+                extended_points[(j, i)] = [*reversed(extended_points[(i, j)])]
 
             for g in green:
                 inter = get_intersections(points[i], points[j], g)

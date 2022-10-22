@@ -11,7 +11,8 @@ from utils import print_solution, get_path
 
 
 def variables():
-    ports = [(10, 10), (290, 290), (100, 30), (10, 200)]
+    ports = [(90, 17), (157, 102), (38, 123), (80, 143), (96, 44), (23, 80), (8, 40), (66, 73), (86, 81), (181, 165),
+             (9, 173), (287, 241)]
     lands = [(20, 20, 40, 45), (100, 50, 150, 70)]
     green = [(50, 100, 80, 120), (200, 56, 250, 80)]
 
@@ -38,10 +39,10 @@ def draw_map(sea_map, ports, lands, green):
 
 
 def run(problem):
-    max_eval = 30_000
+    max_eval = 15_000.3
 
-    pop_size = 4_000
-    offspring = 4000
+    pop_size = 400
+    offspring = 400
     mut_prob = 0.05
     cross_prob = 0.9
 
@@ -85,8 +86,8 @@ def run(problem):
 
 def draw_solution(sea_map, solution, points, extended_points):
     coords = get_path(points, solution, extended_points)
-    for i in range(len(coords) -1):
-        cv2.line(sea_map, coords[i], coords[i+1], (0, 0, 0), lineType=cv2.LINE_AA)
+    for i in range(len(coords) - 1):
+        cv2.line(sea_map, coords[i], coords[i + 1], (0, 0, 0), lineType=cv2.LINE_AA)
 
     return sea_map
 
