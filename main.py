@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
-from jmetal.algorithm.multiobjective import NSGAII
-from jmetal.operator.crossover import PMXCrossover
-from jmetal.operator.mutation import PermutationSwapMutation
-from jmetal.util import termination_criterion
+from jmetal.algorithm.multiobjective import MOEAD
+from jmetal.operator.crossover import DifferentialEvolutionCrossover
+from jmetal.operator.mutation import PolynomialMutation
+from jmetal.util.aggregative_function import Tschebycheff
 from jmetal.util.observer import ProgressBarObserver
+from jmetal.util.termination_criterion import StoppingByEvaluations
 
 from problem import SailingShip
 from utils import print_solution, get_path
@@ -46,26 +47,18 @@ def run(problem):
     mut_prob = 0.04
     cross_prob = 0.5
 
-    termination = termination_criterion.StoppingByEvaluations(max_evaluations=max_eval)
-
-    algorithm = NSGAII(
+    algorithm = MOEAD(
         problem=problem,
-        population_size=pop_size,
-        offspring_population_size=offspring,
-        mutation=PermutationSwapMutation(mut_prob),
-        crossover=PMXCrossover(cross_prob),
-        termination_criterion=termination,
+        population_size=300,
+        crossover=DifferentialEvolutionCrossover(CR=1.0, F=0.5, K=0.5),
+        mutation=PolynomialMutation(probability=1.0 / problem.number_of_variables, distribution_index=20),
+        aggregative_function=Tschebycheff(dimension=problem.number_of_objectives),
+        neighbor_size=20,
+        neighbourhood_selection_probability=0.9,
+        max_number_of_replaced_solutions=2,
+        weight_files_path='resources/MOEAD_weights',
+        termination_criterion=StoppingByEvaluations(max_eval)
     )
-
-    # algorithm = GeneticAlgorithm(
-    #     problem=problem,
-    #     population_size=pop_size,
-    #     offspring_population_size=offspring,
-    #     mutation=PermutationSwapMutation(mut_prob),
-    #     crossover=PMXCrossover(cross_prob),
-    #     selection=select,
-    #     termination_criterion=termination
-    # )
 
     progress_bar = ProgressBarObserver(max=max_eval)
     algorithm.observable.register(progress_bar)

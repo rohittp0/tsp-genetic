@@ -79,7 +79,7 @@ class SailingShip(PermutationProblem):
         self.lower_bound = [0] * self.number_of_variables
         self.upper_bound = [self.number_of_variables - 1] * self.number_of_variables
 
-        self.number_of_objectives = 1
+        self.number_of_objectives = 2
         self.number_of_constraints = 0
         self.obj_directions = [self.MINIMIZE]
 
