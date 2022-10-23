@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 from jmetal.algorithm.multiobjective import NSGAII
-from jmetal.operator.crossover import PMXCrossover, SBXCrossover
-from jmetal.operator.mutation import PermutationSwapMutation, UniformMutation
+from jmetal.operator.crossover import SBXCrossover
+from jmetal.operator.mutation import UniformMutation
 from jmetal.util import termination_criterion
 from jmetal.util.observer import ProgressBarObserver
 
