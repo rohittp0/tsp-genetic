@@ -76,11 +76,11 @@ def run(problem):
     variables = []
     ports = set()
 
-    for i in range(len(result.get_variables)):
-        p = round(result.get_variables[i])
+    for i in range(len(result.variables)):
+        p = round(result.variables[i])
 
         while p in ports:
-            p = (p + 1) % len(result.get_variables)
+            p = (p + 1) % len(result.variables)
 
         variables.append(p)
         ports.add(p)
