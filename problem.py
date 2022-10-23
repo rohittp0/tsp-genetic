@@ -1,9 +1,8 @@
 import math
-import random
 
 import numpy as np
-from jmetal.core.problem import PermutationProblem
-from jmetal.core.solution import PermutationSolution
+from jmetal.core.problem import FloatProblem
+from jmetal.core.solution import FloatSolution
 
 from utils import get_intersections, get_closest
 
@@ -61,7 +60,7 @@ def create_distance_matrix(points, green, lands):
     return distance_matrix, extended_points
 
 
-class SailingShip(PermutationProblem):
+class SailingShip(FloatProblem):
 
     def get_name(self) -> str:
         return "Sailing Ship"
@@ -79,31 +78,41 @@ class SailingShip(PermutationProblem):
         self.lower_bound = [0] * self.number_of_variables
         self.upper_bound = [self.number_of_variables - 1] * self.number_of_variables
 
-        self.number_of_objectives = 1
+        self.number_of_objectives = 2
         self.number_of_constraints = 0
-        self.obj_directions = [self.MINIMIZE]
+        self.obj_directions = [self.MINIMIZE, self.MAXIMIZE]
 
-    def evaluate(self, solution: PermutationSolution) -> PermutationSolution:
-        fitnes = 0
+    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+        fitness = 0
+        jumps = 0
 
-        for i in range(self.number_of_variables - 1):
-            x = solution.variables[i]
-            y = solution.variables[(i + 1)]
+        ports = set()
+        variables = []
 
-            distance = self.distance_matrix[x][y]
+        for i in range(self.number_of_variables):
+            p = round(solution.variables[i])
 
-            fitnes += distance
+            while p in ports:
+                p = (p + 1) % self.number_of_variables
+                jumps += 1
 
-        solution.objectives[0] = fitnes
-        self.fitness.append(fitnes)
+            variables.append(p)
+            ports.add(p)
+
+        for i in range(self.number_of_variables -1):
+            fitness += self.distance_matrix[variables[i]][variables[i+1]]
+
+        solution.objectives[0] = fitness
+        solution.objectives[1] = jumps
+        self.fitness.append(fitness)
 
         return solution
 
-    def create_solution(self) -> PermutationSolution:
-        new_solution = PermutationSolution(number_of_variables=self.number_of_variables,
-                                           number_of_objectives=self.number_of_objectives,
-                                           number_of_constraints=self.number_of_constraints)
-        new_solution.variables = random.sample(range(self.number_of_variables), k=self.number_of_variables)
+    def create_solution(self) -> FloatSolution:
+        new_solution = FloatSolution(lower_bound=self.lower_bound, upper_bound=self.upper_bound,
+                                     number_of_objectives=self.number_of_objectives,
+                                     number_of_constraints=self.number_of_constraints)
+        new_solution.variables = [*range(self.number_of_variables)]
         return new_solution
 
     def get_extended_points(self):
