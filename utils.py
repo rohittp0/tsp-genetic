@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 def print_solution(my_algo, pop_evolved, logs, params):
     algorithm_name = my_algo.get_name()
-    solution_x = pop_evolved.get_variables
+    solution_x = pop_evolved.variables
     fitness = pop_evolved.objectives[0]
     n_evals = my_algo.evaluations
     duration = my_algo.total_computing_time
