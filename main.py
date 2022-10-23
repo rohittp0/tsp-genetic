@@ -1,12 +1,7 @@
 import cv2
 import numpy as np
-from jmetal.algorithm.multiobjective import MOEAD
-from jmetal.operator.crossover import DifferentialEvolutionCrossover
-from jmetal.operator.mutation import PolynomialMutation
-from jmetal.util.aggregative_function import Tschebycheff
-from jmetal.util.observer import ProgressBarObserver
-from jmetal.util.termination_criterion import StoppingByEvaluations
 
+from cmlsga import cmlsga
 from problem import SailingShip
 from utils import print_solution, get_path
 
@@ -40,31 +35,17 @@ def draw_map(sea_map, ports, lands, green):
 
 
 def run(problem):
-    max_eval = 500_000
+    max_eval = 500_0
 
     pop_size = 600
     offspring = 600
     mut_prob = 0.04
     cross_prob = 0.5
 
-    algorithm = MOEAD(
-        problem=problem,
-        population_size=3000,
-        crossover=DifferentialEvolutionCrossover(CR=1.0, F=0.5, K=0.5),
-        mutation=PolynomialMutation(probability=1.0 / problem.number_of_variables, distribution_index=20),
-        aggregative_function=Tschebycheff(dimension=problem.number_of_objectives),
-        neighbor_size=20,
-        neighbourhood_selection_probability=0.9,
-        max_number_of_replaced_solutions=2,
-        weight_files_path='resources/MOEAD_weights',
-        termination_criterion=StoppingByEvaluations(max_eval)
-    )
+    job = cmlsga(problem, pop_size, max_eval)
 
-    progress_bar = ProgressBarObserver(max=max_eval)
-    algorithm.observable.register(progress_bar)
-
-    algorithm.run()
-    result = algorithm.get_result()[0]
+    job.execute()
+    result = job.algorithm.get_result()[0]
 
     params = {'population': pop_size,
               'offspring': offspring,
@@ -84,7 +65,7 @@ def run(problem):
         variables.append(p)
         ports.add(p)
 
-    print_solution(algorithm, result, problem.get_fitness(), params)
+    print_solution(job.algorithm, result, problem.get_fitness(), params)
 
     return variables
 
