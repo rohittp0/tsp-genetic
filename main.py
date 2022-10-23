@@ -10,7 +10,7 @@ from problem import SailingShip
 from utils import print_solution, get_path
 
 
-def variables():
+def get_variables():
     ports = [(90, 17), (157, 102), (38, 123), (80, 143), (96, 44), (23, 80), (8, 40), (66, 73), (86, 81), (181, 165),
              (9, 173), (287, 241)]
     lands = [(20, 20, 40, 45), (100, 50, 150, 70)]
@@ -73,6 +73,18 @@ def run(problem):
     algorithm.run()
     result = algorithm.get_result()[0]
 
+    variables = []
+    ports = set()
+
+    for i in range(len(result.get_variables)):
+        p = round(result.get_variables[i])
+
+        while p in ports:
+            p = (p + 1) % len(result.get_variables)
+
+        variables.append(p)
+        ports.add(p)
+
     params = {'population': pop_size,
               'offspring': offspring,
               'mutation probability': mut_prob,
@@ -81,7 +93,7 @@ def run(problem):
 
     print_solution(algorithm, result, problem.get_fitness(), params)
 
-    return result.variables
+    return variables
 
 
 def draw_solution(sea_map, solution, points, extended_points):
@@ -93,7 +105,7 @@ def draw_solution(sea_map, solution, points, extended_points):
 
 
 def main():
-    sea_map, ports, lands, green = variables()
+    sea_map, ports, lands, green = get_variables()
 
     problem = SailingShip(ports, green, lands)
 

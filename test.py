@@ -1,11 +1,11 @@
 import cv2
 
-from main import variables, draw_map, draw_solution
+from main import get_variables, draw_map, draw_solution
 from problem import create_distance_matrix
 
 
 def main():
-    sea_map, ports, lands, green = variables()
+    sea_map, ports, lands, green = get_variables()
     sea_map = draw_map(sea_map, ports, lands, green)
 
     a, b = create_distance_matrix([ports[6], ports[0]], green, lands)
