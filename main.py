@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 from jmetal.algorithm.multiobjective import NSGAII
-from jmetal.operator.crossover import PMXCrossover
-from jmetal.operator.mutation import PermutationSwapMutation
+from jmetal.operator.crossover import PMXCrossover, SBXCrossover
+from jmetal.operator.mutation import PermutationSwapMutation, UniformMutation
 from jmetal.util import termination_criterion
 from jmetal.util.observer import ProgressBarObserver
 
@@ -52,8 +52,8 @@ def run(problem):
         problem=problem,
         population_size=pop_size,
         offspring_population_size=offspring,
-        mutation=PermutationSwapMutation(mut_prob),
-        crossover=PMXCrossover(cross_prob),
+        mutation=UniformMutation(mut_prob),
+        crossover=SBXCrossover(cross_prob),
         termination_criterion=termination,
     )
 
