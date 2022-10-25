@@ -35,9 +35,9 @@ def draw_map(sea_map, ports, lands, green):
 
 
 def run(problem):
-    max_eval = 500_0
+    max_eval = 23_000
 
-    pop_size = 600
+    pop_size = 1200
     offspring = 600
     mut_prob = 0.04
     cross_prob = 0.5
