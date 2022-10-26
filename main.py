@@ -100,7 +100,7 @@ def draw_solution(sea_map, solution, points, extended_points):
 def main():
     sea_map, ports, lands, green = get_variables()
 
-    problem = SailingShip(ports, green, lands)
+    problem = SailingShip(ports, green, lands, 75)
 
     solution = run(problem)
     extended_points = problem.extended_points

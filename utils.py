@@ -21,6 +21,7 @@ def print_solution(my_algo, pop_evolved, logs, params):
         print("\t%s: " % p, params[p])
     print('-' * 60)
     print("Fitness: %f" % fitness)
+    print("Constraints: ", pop_evolved.constraints)
     print("Solution: ")
     print(solution_x)
     print('-' * 60)
