@@ -65,11 +65,12 @@ class SailingShip(FloatProblem):
     def get_name(self) -> str:
         return "Sailing Ship"
 
-    def __init__(self, ports, green, lands):
+    def __init__(self, ports, green, lands, max_distance):
         super().__init__()
         self.ports = ports
         self.green = green
         self.lands = lands
+        self.max_distance = max_distance
 
         self.number_of_variables = len(ports)
         self.distance_matrix, self.extended_points = create_distance_matrix(ports, green, lands)
@@ -79,7 +80,7 @@ class SailingShip(FloatProblem):
         self.upper_bound = [self.number_of_variables - 1] * self.number_of_variables
 
         self.number_of_objectives = 2
-        self.number_of_constraints = 0
+        self.number_of_constraints = self.number_of_variables
         self.obj_directions = [self.MINIMIZE, self.MAXIMIZE]
 
     def evaluate(self, solution: FloatSolution) -> FloatSolution:
@@ -99,8 +100,10 @@ class SailingShip(FloatProblem):
             variables.append(p)
             ports.add(p)
 
-        for i in range(self.number_of_variables -1):
-            fitness += self.distance_matrix[variables[i]][variables[i+1]]
+        for i in range(self.number_of_variables - 1):
+            distance = self.distance_matrix[variables[i]][variables[i + 1]]
+            fitness += distance
+            solution.constraints[i] = self.max_distance - distance
 
         solution.objectives[0] = fitness
         solution.objectives[1] = jumps
